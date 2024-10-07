@@ -24,6 +24,8 @@ func main() {
 		group.POST("/music", MusicHandler)
 	}
 
+	//scheduled task for clean up with go keyword and time.Sleep(x*time.Minute)
+
 	router.Run("localhost:8080")
 }
 
