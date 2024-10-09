@@ -1,0 +1,16 @@
+#form > *{
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+#container{
+    width:30%;
+}
+
+img:hover{
+    transform: scale(1.1);
+}
+
+img{
+    transition: transform 0.3s ease-in-out;
+}

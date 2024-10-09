@@ -1,18 +1,22 @@
-import {useState} from 'react'
+import {useState, useMemo} from 'react'
+import { DEV_URL } from '../../shared-resources/constants';
 import axios from 'axios';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import logo from "../../logo.svg";
+import "./DownloadForm.css"
 
 const DownloadForm = () => {
 
-    const [formData, setFormData] = useState({url:'',actionType:'p'})
+    const [formData, setFormData] = useState({url:''})
+
+    const url = useMemo(() => (process.env.API_URL === null || process.env.API_URL === undefined ? DEV_URL : process.env.API_URL),[]);
 
     async function handleForm(event){
         event.preventDefault();
 
         try{
-            const response = await axios.post('http://localhost:8080/api/v1/music',{
-                url: formData.url,
-                actionType: formData.actionType
-            },{
+            const response = await axios.post(`${url}/v1/music`,formData,{
                 responseType: 'blob'
             });
 
@@ -31,8 +35,13 @@ const DownloadForm = () => {
 
             downloadMusicFile(new Blob([response.data]), fileName);
         } catch (err) {
-            console.log(err)
-            alert(await err?.response?.data?.text())
+            let error = await err?.response?.data?.text()
+
+            if(error === undefined)
+                error = "Error while getting data"
+
+            console.log(error)
+            alert(error)
         }
     }
 
@@ -62,17 +71,11 @@ const DownloadForm = () => {
     }
 
 
-    return <div>
-        <form onSubmit={handleForm}>
-            <label>Enter URL
-                <input type="text" name="url"placeholder="Past URL here" value={formData.url} onChange={handleChange} required/>
-            </label>
-            <select name="actionType" value={formData.actionType} onChange={handleChange}>
-                <option value="p">Play List</option>
-                <option value="t">Single Track</option>
-                <option value="a">Album</option>
-            </select>
-            <button type="submit">Download</button>
+    return <div id="container">
+        <form onSubmit={handleForm} id="form">
+            <img src={logo} alt="logo"/>
+            <TextField name="url" id="textField" label="Url of video" variant="outlined" value={formData.url} onChange={handleChange} required sx={{width: "100%"}} /><br />
+            <Button variant="outlined" type="submit" size="large" id="submitBtn">Download</Button>
         </form>
     </div>
 }

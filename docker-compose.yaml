@@ -1,0 +1,30 @@
+version: '1.0'
+
+name: 'go-react-music'
+
+services:
+  frontend:
+    build: './react/.'
+    container_name: 'react'
+    restart: always
+    depends_on:
+      - backend
+    links:
+      - backend
+    ports:
+      - "80:80"
+    networks:
+      - common-network
+
+  backend:
+    build: './go/.'
+    container_name: 'go'
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - common-network
+
+networks:
+  common-network:
+    driver: bridge

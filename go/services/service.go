@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"time"
 
 	"github.com/beevik/guid"
 )
@@ -15,7 +16,7 @@ const PATH = "." + string(filepath.Separator) + "temp"
 const NAME = "MusicApp_"
 const COMPRESSED_EXTENSION = ".zip"
 
-func DownloadMusic(url string, actionType string) (string, string, bool, error) {
+func DownloadMusic(url string) (string, string, bool, error) {
 	tempFolderName := guid.New()
 
 	folderPath := fmt.Sprintf("%v%v%v", PATH, string(filepath.Separator), tempFolderName)
@@ -141,4 +142,30 @@ func createZipFile(path string, name string) error {
 
 func CleanUp(path string) {
 	os.RemoveAll(path)
+}
+
+func ScheduledCleanUp() {
+	for {
+		fmt.Println("clean up started")
+
+		temp, err := os.ReadDir(PATH)
+
+		if err == nil {
+			for _, entry := range temp {
+				info, err := entry.Info()
+
+				if err != nil {
+					continue
+				}
+
+				if info.ModTime().After(time.Now().Add(10 * time.Minute)) {
+					os.RemoveAll(PATH + string(filepath.Separator) + entry.Name())
+				}
+			}
+		}
+
+		fmt.Println("clean up finished")
+
+		time.Sleep(10 * time.Minute)
+	}
 }

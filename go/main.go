@@ -21,14 +21,14 @@ func main() {
 		})
 	})
 
+	//@todo: implement for playlists too
+
 	group := router.Group("/api/v1")
 	{
 		group.POST("/music", MusicHandler)
 	}
 
-	//scheduled task for clean up with go keyword and time.Sleep(x*time.Minute)
-	//implement clean up goroutine in services
-	//handle and test the same for playlists
+	go service.ScheduledCleanUp()
 
 	host := os.Getenv("HOST")
 
@@ -52,7 +52,7 @@ func MusicHandler(context *gin.Context) {
 
 	fmt.Println(dto)
 
-	path, fileName, success, err := service.DownloadMusic(dto.Url, dto.ActionType)
+	path, fileName, success, err := service.DownloadMusic(dto.Url)
 
 	if !success {
 		context.String(500, fmt.Sprintf("Error while retrieving data %v", err))
