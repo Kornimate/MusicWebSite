@@ -12,9 +12,18 @@ import (
 	"github.com/beevik/guid"
 )
 
-const PATH = "." + string(filepath.Separator) + "temp"
+var PATH = ""
+
 const NAME = "MusicApp_"
 const COMPRESSED_EXTENSION = ".zip"
+
+func InitializePath() {
+	PATH = os.Getenv("DOWNLOAD_PATH")
+
+	if PATH == "" {
+		PATH = "." + string(filepath.Separator) + "temp"
+	}
+}
 
 func DownloadMusic(url string) (string, string, bool, error) {
 	tempFolderName := guid.New()
@@ -26,14 +35,14 @@ func DownloadMusic(url string) (string, string, bool, error) {
 
 	if err != nil {
 		defer CleanUp(folderPath)
-		return "", "", false, err
+		return "", "", false, fmt.Errorf("error while creating dir:%v", err)
 	}
 
-	cmd := exec.Command("yt-dlp", "-x", "--audio-format", "mp3", "-o", folderPath+string(filepath.Separator)+"%(title)s.%(ext)s", url)
+	cmd := exec.Command("yt-dlp", "-v", "-x", "--audio-format", "mp3", "-o", folderPath+string(filepath.Separator)+"%(title)s.%(ext)s", url)
 
-	if err := cmd.Run(); err != nil {
+	if output, err := cmd.CombinedOutput(); err != nil {
 		defer CleanUp(folderPath)
-		return "", "", false, err
+		return "", "", false, fmt.Errorf("error while running command:%v\n%v", err, output)
 	}
 
 	fmt.Println("command executed")
@@ -42,21 +51,21 @@ func DownloadMusic(url string) (string, string, bool, error) {
 
 	if err != nil {
 		defer CleanUp(folderPath)
-		return "", "", false, err
+		return "", "", false, fmt.Errorf("error while opening dir:%v", err)
 	}
 
 	dirInfoFiles, _ := dir.Readdir(0)
 
 	if err := dir.Close(); err != nil {
 		defer CleanUp(folderPath)
-		return "", "", false, err
+		return "", "", false, fmt.Errorf("error while reading dir content:%v", err)
 	}
 
 	size := len(dirInfoFiles)
 
 	if size > 1 {
 		if err := createZipFile(folderPath, zipFile); err != nil {
-			return "", "", false, err
+			return "", "", false, fmt.Errorf("failed to create zip file:%v", err)
 		}
 
 		fmt.Println("zip file created")

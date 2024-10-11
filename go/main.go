@@ -12,6 +12,8 @@ import (
 )
 
 func main() {
+	service.InitializePath()
+
 	router := gin.Default()
 	router.Use(CORSMiddleware())
 

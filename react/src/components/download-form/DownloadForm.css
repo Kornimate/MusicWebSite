@@ -1,10 +1,6 @@
-#form > *{
+#form > * > *{
     margin-top: 1rem;
     margin-bottom: 1rem;
-}
-
-#container{
-    width:30%;
 }
 
 img:hover{
@@ -13,4 +9,5 @@ img:hover{
 
 img{
     transition: transform 0.3s ease-in-out;
+    width: 20rem;
 }

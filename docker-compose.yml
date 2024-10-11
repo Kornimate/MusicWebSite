@@ -5,6 +5,7 @@ name: 'go-react-music'
 services:
   frontend:
     build: './react/.'
+    # image: 'mkornidesz/music-frontend'
     container_name: 'react'
     restart: always
     depends_on:
@@ -18,6 +19,7 @@ services:
 
   backend:
     build: './go/.'
+    # image: 'mkornidesz/music-backend'
     container_name: 'go'
     restart: always
     ports:
