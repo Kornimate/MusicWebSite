@@ -28,6 +28,7 @@ func main() {
 	group := router.Group("/api/v1")
 	{
 		group.POST("/music", MusicHandler)
+		group.GET("/version", VersionHandler)
 	}
 
 	go service.ScheduledCleanUp()
@@ -52,12 +53,15 @@ func MusicHandler(context *gin.Context) {
 		return
 	}
 
-	fmt.Println(dto)
-
-	path, fileName, success, err := service.DownloadMusic(dto.Url)
+	path, fileName, success, output, err := service.DownloadMusic(dto.Url)
 
 	if !success {
-		context.String(500, fmt.Sprintf("Error while retrieving data %v", err))
+		context.IndentedJSON(500, gin.H{
+			"error":  fmt.Sprintf("Error while retrieving data %v", err),
+			"output": output,
+		})
+
+		return
 	}
 
 	context.Header("Content-Description", "File Transfer")
@@ -69,6 +73,18 @@ func MusicHandler(context *gin.Context) {
 	context.Status(http.StatusOK)
 
 	defer service.CleanUp(path)
+}
+
+func VersionHandler(context *gin.Context) {
+	version, err := service.GetAppVersion()
+
+	if err != nil {
+		version = "0.0 (def)"
+	}
+
+	context.IndentedJSON(http.StatusOK, gin.H{
+		"version": version,
+	})
 }
 
 func CORSMiddleware() gin.HandlerFunc {

@@ -1,5 +1,6 @@
 import './App.css';
 import DownloadForm from './components/download-form/DownloadForm';
+import Version from './components/version/Version';
 
 
 function App() {
@@ -8,6 +9,7 @@ function App() {
     <div className="App">
       <header className="App-header">
           <DownloadForm />
+          <Version />
       </header>
     </div>
   );

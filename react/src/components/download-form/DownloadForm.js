@@ -55,7 +55,12 @@ const DownloadForm = () => {
             setAlertColor('success');
             setOpen(true);
         } catch (err) {
-            let error = await err?.response?.data?.text();
+            const content = JSON.parse(await err?.response?.data.text());
+
+            let error = content?.error;
+            const output = content?.output;
+
+            console.log(content)
 
             if(error === undefined)
                 error = "Error while downloading file";
@@ -66,6 +71,7 @@ const DownloadForm = () => {
             setOpen(true);
 
             console.log(error)
+            console.log(output)
         }
     }
 
