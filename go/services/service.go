@@ -42,7 +42,7 @@ func DownloadMusic(url string) (string, string, bool, string, error) {
 		return "", "", false, "", fmt.Errorf("error while creating dir:%v", err)
 	}
 
-	cmd := exec.Command("python3", "./python/downloader.py", url, folderPath)
+	cmd := exec.Command("python", "./python/downloader.py", url, folderPath)
 
 	output, err := cmd.CombinedOutput()
 
